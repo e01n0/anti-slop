@@ -4,7 +4,7 @@
 Counts mechanical violations that a regex can catch: sentence length,
 contractions, banned modals, perfect tenses, "-ing" clauses, semicolons,
 em-dashes, Latin abbreviations, slop words, trailing conditions, synonym
-rotation.
+rotation, vague pronoun openers.
 
 Known ceiling: this is a regex pass, not a grammar parser. It undercounts
 (no passive-voice detection, no part-of-speech checks) and it can miscount
@@ -56,6 +56,7 @@ SLOP = slop_pattern()
 # prefix pattern, whose backtracking was quadratic on long sentences
 # (a punctuation-free 8,000-word input took ~7s; now sub-millisecond).
 TRAILING_COND = re.compile(r"\s(if|when)\s", re.I)
+REFERENTIAL_OPENER = re.compile(r"^(this|it|they|their|these|those)\b", re.I)
 DASH = re.compile(r"\u2014|(?<!\d)\u2013(?!\d)|(?<= )--(?= )|(?<=[^\s\d]{2}) - (?=[^\s\d]{2})")
 ROTATION_SETS = [
     ("check-verify", re.compile(r"\b(check|verify|confirm|validate|ensure)\w*\b", re.I)),
@@ -106,6 +107,9 @@ def lint(text, text_type):
     counts["trailing_condition"] = (
         sum(1 for s in sents if trailing_cond(s)) if text_type == "procedural" else 0
     )
+    counts["referential_opener"] = sum(
+        1 for s in sents if REFERENTIAL_OPENER.match(s)
+    )
     rotation = 0
     for _, rx in ROTATION_SETS:
         stems = {m.group(1).lower().rstrip("s") for m in rx.finditer(body)}
@@ -132,7 +136,7 @@ been designed from the ground up to gracefully handle even the most challenging 
 interruptions. You should verify your credentials; it's also worth checking the settings,
 e.g. the timeout config. Contact support if the problem persists."""
 
-CLEAN_FIXTURE = """The system retries a failed upload automatically. This process keeps the data correct.
+CLEAN_FIXTURE = """The system retries a failed upload automatically. The retry keeps the data correct.
 
 If failures continue, make sure that your credentials are correct. If the problem continues, contact support."""
 
@@ -166,6 +170,7 @@ def self_test():
     assert slop["violations"]["synonym_rotation"] >= 1, slop
     assert clean["violations_total"] == 0, clean
     assert lint("We delve into the landscape.", "descriptive")["violations"]["slop_word"] == 2
+    assert lint("Their findings describe the text.", "descriptive")["violations"]["referential_opener"] == 1
     assert dashes["violations"]["em_dash"] == 3, dashes
     print("self-test OK:", slop["violations_total"], "violations in slop fixture, 0 in clean")
 

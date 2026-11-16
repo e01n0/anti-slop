@@ -24,12 +24,13 @@ For a document, separate descriptions from procedures. A description explains. A
 - Use one term for each concept.
 - Prefer common words.
 - When a necessary technical term first appears, define it.
+- Do not start a sentence with `this`, `it`, `they`, `their`, `these`, or `those`. Repeat the noun.
 
 Delete promotional adjectives, vague attribution, narrator framing, decorative triplets, rhetorical questions, and fake punchlines.
 
-Delete corrective "not X but Y" phrasing. State the positive claim once.
+Replace corrective "not X but Y" phrasing with one positive claim.
 
-Delete sentences that announce the next point. State the point instead.
+Replace an announcement sentence with the fact that it introduces.
 
 Delete any sentence that survives only for rhythm.
 
@@ -37,10 +38,12 @@ Delete any sentence that survives only for rhythm.
 
 Inspect every heading. Each heading must name the content or state the claim.
 
-Inspect every paragraph. It must contain a fact, evidence, a decision, a cause, or an instruction.
+Inspect every paragraph. Each paragraph must contain a fact, evidence, a decision, a cause, or an instruction.
 
 Run a mechanical prose linter and a structural slop detector. Read each finding in context. Keep deliberate exceptions and explain them.
 
+Run both the `ai-style` and `reader-first` SlopSift rulepacks.
+
 Do not chase a score of zero. Tables, diagrams, quoted text, and terse runbooks can produce false positives.
 
-These checks improve expression. They do not prove that a claim is true.
+The checks improve expression but do not prove that a claim is true.
